@@ -1,7 +1,7 @@
 import { client } from "@/sanity/lib/client";
 import Image from "next/image";
 import React from "react";
-
+import { Car } from "@/app/page";
 import Link from "next/link";
 
 interface Params {
@@ -9,17 +9,7 @@ interface Params {
     _id: string;
   };
 }
-export interface Car {
-  _id: string;
-  name: string;
-  pricePerDay: string;
-  type: string;
-  fuelCapacity: string;
-  transmission: string;
-  seatingCapacity: string;
 
-  imageUrl: string;
-}
 const cardpost = async (params: Params) => {
   const { _id } = params.params;
 
