@@ -1,7 +1,9 @@
+'use client'
 import { client } from "@/sanity/lib/client";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export interface Car {
   _id: string;
@@ -10,16 +12,30 @@ export interface Car {
   imageUrl: string;
 }
 
-export default async function Home() {
-  const response: Car[] = await client.fetch(
-    `*[_type == "car" ][0..7]{
-        _id,
-          name,
-          pricePerDay,
-          "imageUrl": image.asset->url
-        }`
-  );
-  console.log("sanity response>>", response);
+export default function Home() {
+  const [cars, setCars] = useState<Car[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const response: Car[] = await client.fetch(
+          `*[_type == "car" ][0..7]{
+            _id,
+            name,
+            pricePerDay,
+            "imageUrl": image.asset->url
+          }`
+        );
+        setCars(response);
+      } catch (err) {
+        console.error("API Error:", err);
+        setError("Products could not be loaded. Please try again later.");
+      }
+    };
+
+    fetchCars();
+  }, []);
 
   return (
     <div>
@@ -37,8 +53,7 @@ export default async function Home() {
               The Best Platform for Car Rental
             </h1>
             <p className="mb-6">
-              Ease of doing a car rental safely and reliably, all at an
-              affordable price.
+              Ease of doing a car rental safely and reliably, all at an affordable price.
             </p>
             <Link href="/categorie-car-rent">
               <button className="bg-white text-blue-500 py-3 px-6 rounded-lg shadow-md hover:bg-blue-100 transition-colors">
@@ -62,8 +77,7 @@ export default async function Home() {
               Rent Cars at Affordable Prices
             </h1>
             <p className="mb-6">
-              Providing cheap car rental services with comfort and safety
-              guaranteed.
+              Providing cheap car rental services with comfort and safety guaranteed.
             </p>
             <Link href="/categorie-car-rent">
               <button className="bg-white text-blue-700 py-3 px-6 rounded-lg shadow-md hover:bg-blue-100 transition-colors">
@@ -81,6 +95,7 @@ export default async function Home() {
             </div>
           </div>
         </div>
+
         {/* Search Section */}
         <div className="bg-white shadow p-6 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-6 items-center mb-10">
           <div>
@@ -102,13 +117,14 @@ export default async function Home() {
         </div>
 
         {/* Popular Cars Section */}
-
         <h2 className="text-2xl font-bold mb-6">Popular Cars</h2>
 
-        {
+        {error ? (
+          <p className="text-red-500 text-center">{error}</p>
+        ) : (
           <div className="container mx-auto px-4 py-10">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {response.map((car) => (
+              {cars.map((car) => (
                 <div
                   key={car._id}
                   className="bg-white shadow-md hover:shadow-lg transition-shadow transform hover:-translate-y-1 cursor-pointer p-6 rounded-lg relative overflow-hidden"
@@ -137,7 +153,7 @@ export default async function Home() {
               ))}
             </div>
           </div>
-        }
+        )}
 
         {/* Show More Button */}
         <div className="text-center mt-8">
@@ -151,12 +167,3 @@ export default async function Home() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
