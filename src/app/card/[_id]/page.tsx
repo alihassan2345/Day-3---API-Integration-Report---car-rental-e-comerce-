@@ -3,6 +3,7 @@ import Image from "next/image";
 import React from "react";
 import { Car } from "@/app/page";
 import Link from "next/link";
+import CommentSec from "@/app/commentsec/page";
 
 interface Params {
   params: {
@@ -27,6 +28,7 @@ seatingCapacity,
     { _id }
   );
   console.log("sanity response>>", response);
+  
   return (
     <main>
       <div className="max-w-5xl mx-auto p-8 bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-lg transition-shadow duration-300 hover:shadow-2xl">
@@ -100,8 +102,47 @@ seatingCapacity,
           </Link>
         </div>
       </div>
+       {/* Reviews */}
+                <div className="bg-white p-6 rounded-lg shadow">
+                  <h2 className="text-lg font-semibold">Reviews</h2>
+                  <div className="space-y-4">
+                    {["Alex Stanton", "Alex stanton"].map((name, index) => (
+                      <div key={index} className="flex gap-4">
+                        <Image
+                          src="/images/Profil.png"
+                          alt="Reviewer"
+                          width={50}
+                          height={50}
+                          className="rounded-full"
+                        />
+      
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{name}</h3>
+                          <p className="text-gray-500 text-sm">
+                            Amazing car and service!
+                          </p>
+                        </div>
+                        <p className="text-yellow-500">4.8 ★</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <CommentSec/>
+
+
+
+
+
+
+
+
+
+       
     </main>
+    
   );
+  
 };
 
 export default cardpost;
