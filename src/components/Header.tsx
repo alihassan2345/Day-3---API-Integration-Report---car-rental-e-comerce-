@@ -5,8 +5,6 @@ import { FaHeart } from "react-icons/fa";
 import { FaBell } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-
 const Header = () => {
   return (
     <div className="w-full h-auto border bg-[#C3D4E966] p-4">
@@ -36,12 +34,7 @@ const Header = () => {
           </Link>
           <FaBell className="w-6 h-6 text-gray-500 hover:text-yellow-500 cursor-pointer" />
           <IoMdSettings className="w-6 h-6 text-gray-500 hover:text-black cursor-pointer" />
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
+          
         </div>
       </div>
     </div>
