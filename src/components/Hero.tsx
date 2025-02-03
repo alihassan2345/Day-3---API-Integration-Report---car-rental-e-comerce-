@@ -18,7 +18,7 @@ interface WishlistPageProps {
   handleWishlistToggle: (car: Car) => void;
 }
 
-const WishlistPage: React.FC<WishlistPageProps> = ({ wishlist, handleWishlistToggle }) => {
+const WishlistPage: React.FC<WishlistPageProps> = () => {
   const [localWishlist, setLocalWishlist] = useState<Car[]>([]);
 
   useEffect(() => {
