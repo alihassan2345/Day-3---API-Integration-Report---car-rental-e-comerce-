@@ -13,72 +13,9 @@ interface Car {
   imageUrl: string;
 }
 
-interface WishlistPageProps {
-  wishlist: Car[];
-  handleWishlistToggle: (car: Car) => void;
-}
-
-const WishlistPage: React.FC<WishlistPageProps> = ({ wishlist, handleWishlistToggle }) => {
-  const [localWishlist, setLocalWishlist] = useState<Car[]>([]);
-
-  useEffect(() => {
-    const storedWishlist = localStorage.getItem("wishlist");
-    if (storedWishlist) {
-      try {
-        setLocalWishlist(JSON.parse(storedWishlist));
-      } catch (error) {
-        console.error("Error parsing wishlist:", error);
-      }
-    }
-  }, []);
-
-  // Persist wishlist to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(localWishlist));
-  }, [localWishlist]);
-
-  const handleToggle = (car: Car) => {
-    const existsInWishlist = localWishlist.some((item) => item._id === car._id);
-
-    if (existsInWishlist) {
-      // Remove from wishlist
-      const updatedWishlist = localWishlist.filter((item) => item._id !== car._id);
-      setLocalWishlist(updatedWishlist);
-      toast.error(`${car.name} removed from wishlist`);
-    } else {
-      // Add to wishlist
-      const updatedWishlist = [...localWishlist, car];
-      setLocalWishlist(updatedWishlist);
-      toast.success(`${car.name} added to wishlist`);
-    }
-  };
-
-  return (
-    <div>
-      <Toaster />
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {localWishlist.map((car) => (
-          <div
-            key={car._id}
-            className="bg-white p-4 rounded-lg shadow-md flex flex-col justify-between"
-          >
-            <h2 className="text-xl font-semibold">{car.name}</h2>
-            <button
-              onClick={() => handleToggle(car)}
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
-            >
-              Remove from Wishlist
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 const Home: React.FC = () => {
   const [wishlist, setWishlist] = useState<Car[]>([]);
+  const [response, setResponse] = useState<Car[]>([]);
 
   useEffect(() => {
     const storedWishlist = localStorage.getItem("wishlist");
@@ -108,8 +45,6 @@ const Home: React.FC = () => {
       toast.success(`${car.name} added to wishlist`);
     }
   };
-
-  const [response, setResponse] = useState<Car[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -261,7 +196,27 @@ const Home: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Wishlist Section */}
+        <h2 className="text-2xl font-poppins font-bold mb-6">Wishlist</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {wishlist.map((car) => (
+            <div
+              key={car._id}
+              className="bg-white p-4 rounded-lg shadow-md flex flex-col justify-between"
+            >
+              <h2 className="text-xl font-semibold">{car.name}</h2>
+              <button
+                onClick={() => handleWishlistToggle(car)}
+                className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
+              >
+                Remove from Wishlist
+              </button>
+            </div>
+          ))}
+        </div>
       </main>
+      <Toaster />
     </div>
   );
 };
