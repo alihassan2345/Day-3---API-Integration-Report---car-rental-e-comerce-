@@ -13,18 +13,6 @@ export interface Car {
 }
 
 const Home: React.FC = () => {
-  const cars = [
-    { type: "Sport", capacity: "2 Person", price: 50 },
-    { type: "SUV", capacity: "4 Person", price: 70 },
-    { type: "MPV", capacity: "6 Person", price: 90 },
-    { type: "Sedan", capacity: "4 Person", price: 60 },
-    { type: "Coupe", capacity: "2 Person", price: 80 },
-    { type: "Hatchback", capacity: "4 Person", price: 40 },
-  ];
-
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedCapacities, setSelectedCapacities] = useState<string[]>([]);
-  const [maxPrice, setMaxPrice] = useState<number>(100);
   const [response, setResponse] = useState<Car[]>([]);
 
   useEffect(() => {
@@ -43,33 +31,6 @@ const Home: React.FC = () => {
     fetchData();
   }, []);
 
-  const handleTypeFilter = (type: string) => {
-    setSelectedTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
-  };
-
-  const handleCapacityFilter = (capacity: string) => {
-    setSelectedCapacities((prev: string[]) =>
-      prev.includes(capacity)
-        ? prev.filter((c) => c !== capacity)
-        : [...prev, capacity]
-    );
-  };
-
-  const filteredCars = cars.filter(
-    (car: { type: string; capacity: string; price: number }) => {
-      const matchesType =
-        selectedTypes.length === 0 || selectedTypes.includes(car.type);
-      const matchesCapacity =
-        selectedCapacities.length === 0 ||
-        selectedCapacities.includes(car.capacity);
-      const matchesPrice = car.price <= maxPrice;
-
-      return matchesType && matchesCapacity && matchesPrice;
-    }
-  );
-
   return (
     <div>
       <Head>
@@ -86,38 +47,24 @@ const Home: React.FC = () => {
               <div>
                 <h3 className="text-sm font-bold mb-2 text-black font-poppins">Type</h3>
                 <ul className="space-y-2 text-black">
-                  {["Sport", "SUV", "MPV", "Sedan", "Coupe", "Hatchback"].map(
-                    (type) => (
-                      <li key={type} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedTypes.includes(type)}
-                          onChange={() => handleTypeFilter(type)}
-                          className="form-checkbox"
-                        />
-                        <label className="text-sm">{type}</label>
-                      </li>
-                    )
-                  )}
+                  {["Sport", "SUV", "MPV", "Sedan", "Coupe", "Hatchback"].map((type) => (
+                    <li key={type} className="flex items-center space-x-2">
+                      <input type="checkbox" className="form-checkbox" />
+                      <label className="text-sm">{type}</label>
+                    </li>
+                  ))}
                 </ul>
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2 text-black font-poppins">Capacity</h3>
                 <ul className="space-y-2 text-black">
-                  {["2 Person", "4 Person", "6 Person", "8 or More"].map(
-                    (capacity) => (
-                      <li key={capacity} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedCapacities.includes(capacity)}
-                          onChange={() => handleCapacityFilter(capacity)}
-                          className="form-checkbox"
-                        />
-                        <label className="text-sm">{capacity}</label>
-                      </li>
-                    )
-                  )}
+                  {["2 Person", "4 Person", "6 Person", "8 or More"].map((capacity) => (
+                    <li key={capacity} className="flex items-center space-x-2">
+                      <input type="checkbox" className="form-checkbox" />
+                      <label className="text-sm">{capacity}</label>
+                    </li>
+                  ))}
                 </ul>
               </div>
 
@@ -127,11 +74,9 @@ const Home: React.FC = () => {
                   type="range"
                   min="0"
                   max="100"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(Number(e.target.value))}
                   className="w-full bg-blue-600"
                 />
-                <div className="text-sm text-black">${maxPrice}</div>
+                <div className="text-sm text-black">$100</div>
               </div>
             </div>
           </aside>
@@ -147,7 +92,6 @@ const Home: React.FC = () => {
                     key={index}
                     className="bg-white shadow-md hover:shadow-lg transition-shadow transform hover:-translate-y-1 cursor-pointer p-6 rounded-lg"
                   >
-                    {/* Product Image with Fixed Height and Width */}
                     <div className="w-full h-48 overflow-hidden rounded-lg mb-10">
                       <Image
                         className="object-cover w-full h-full"
@@ -158,17 +102,14 @@ const Home: React.FC = () => {
                       />
                     </div>
 
-                    {/* Car Name with Truncate */}
                     <h2 className="text-lg font-semibold mb-2 truncate font-poppins">
                       {car.name}
                     </h2>
 
-                    {/* Car Price */}
                     <p className="text-gray-700 text-md font-medium mb-4">
                       {car.pricePerDay}
                     </p>
 
-                    {/* Rent Now Button */}
                     <Link href={`/card/${car._id}`} passHref>
                       <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors duration-300">
                         Rent Now
