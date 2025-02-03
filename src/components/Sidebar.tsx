@@ -1,42 +1,49 @@
-export default function Sidebar() {
-  return (
-    <div>
-      {/* Filters Section */}
-      <aside className="bg-white p-4 rounded shadow hidden lg:block">
-        <h2 className="text-xl font-bold mb-4">Filters</h2>
+'use client'
+import { useState } from "react";
 
-        {/* Car Type Filter */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Type</label>
-          <select className="w-full border rounded p-2">
-            <option value="">All Types</option>
-            <option value="Sport">Sport</option>
-            <option value="SUV">SUV</option>
-            <option value="MPV">MPV</option>
-            <option value="Sedan">Sedan</option>
-            <option value="Coupe">Coupe</option>
-            <option value="Hatchback">Hatchback</option>
-          </select>
-        </div>
+const HeroSection = () => {
 
-        {/* Capacity Filter */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Capacity</label>
-          <select className="w-full border rounded p-2">
-            <option value="">All Capacities</option>
-            <option value="2 Person">2 Person</option>
-            <option value="4 Person">4 Person</option>
-            <option value="6 Person">6 Person</option>
-          </select>
-        </div>
+const cars = [
+  { type: "Sport", capacity: "2 Person", price: 50 },
+  { type: "SUV", capacity: "4 Person", price: 70 },
+  { type: "MPV", capacity: "6 Person", price: 90 },
+  { type: "Sedan", capacity: "4 Person", price: 60 },
+  { type: "Coupe", capacity: "2 Person", price: 80 },
+  { type: "Hatchback", capacity: "4 Person", price: 40 },
+];
 
-        {/* Price Filter */}
-        <div>
-          <label className="block text-sm font-medium mb-2">Price</label>
-          <input type="range" className="w-full" min="0" max="100" />
-          <div className="text-sm mt-2">Max: $100.00</div>
-        </div>
-      </aside>
-    </div>
-  );
+
+const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedCapacities, setSelectedCapacities] = useState<string[]>([]);
+  const [maxPrice, setMaxPrice] = useState<number>(100);
+
+  const handleTypeFilter = (type: string) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
+  const handleCapacityFilter = (capacity: string) => {
+    setSelectedCapacities((prev: string[]) =>
+      prev.includes(capacity)
+        ? prev.filter((c) => c !== capacity)
+        : [...prev, capacity]
+    );
+  };
+
+  const filteredCars = cars.filter((car: { type: string; capacity: string; price: number }) => {
+    const matchesType =
+      selectedTypes.length === 0 || selectedTypes.includes(car.type);
+    const matchesCapacity =
+      selectedCapacities.length === 0 ||
+      selectedCapacities.includes(car.capacity);
+    const matchesPrice = car.price <= maxPrice;
+
+    return matchesType && matchesCapacity && matchesPrice;
+  });
+
+
+
+
 }
+export default HeroSection;

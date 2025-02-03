@@ -5,7 +5,7 @@ import { FaHeart } from "react-icons/fa";
 import { FaBell } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
 import Link from "next/link";
-import Image from "next/image";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 const Header = () => {
   return (
@@ -31,16 +31,17 @@ const Header = () => {
 
         {/* Profile and Settings */}
         <div className="flex justify-center items-center gap-4 mt-4 md:mt-0 md:order-3">
-          <FaHeart className="w-6 h-6 text-gray-500 hover:text-red-500 cursor-pointer " />
+          <Link href="/whislist">
+            <FaHeart className="w-6 h-6 text-gray-500 hover:text-red-500 cursor-pointer " />
+          </Link>
           <FaBell className="w-6 h-6 text-gray-500 hover:text-yellow-500 cursor-pointer" />
           <IoMdSettings className="w-6 h-6 text-gray-500 hover:text-black cursor-pointer" />
-          <Image
-            src="/images/Profil.png"
-            alt="profile"
-            width={36}
-            height={36}
-            className="rounded-full cursor-pointer"
-          />
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
       </div>
     </div>

@@ -1,174 +1,134 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { client } from "@/sanity/lib/client";
+import Head from "next/head";
+
+interface Booking {
+  _id: string;
+  car: {
+    imageUrl: string;
+    _ref: string;
+    name: string;
+  };
+  userName: string;
+  status: string;
+  rentalDate: string;
+  returnDate: string;
+}
 
 export default function DashboardPage() {
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch bookings for the logged-in user
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const userName = "John Doe"; // Replace with the actual logged-in user's name
+        const bookings = await client.fetch(
+          `*[_type == "booking"]{
+            _id,
+            car->{name, "imageUrl": image.asset->url},
+            userName,
+            status,
+            rentalDate,
+            returnDate
+          }`,
+          { userName }
+        );
+        setBookings(bookings);
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
+
+  if (loading) {
+    return <div className="bg-gray-50 min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
   return (
-    <div className="bg-gray-50 min-h-screen py-10 px-4 md:px-10">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar */}
-        <aside className="col-span-1 bg-white p-6 rounded-lg shadow space-y-6">
-          <nav className="space-y-4">
-            <a href="#" className="block text-blue-600 font-semibold">
-              Dashboard
-            </a>
-            <a href="#" className="block text-gray-600 hover:text-blue-600">
-              Car Rent
-            </a>
-            <a href="#" className="block text-gray-600 hover:text-blue-600">
-              Reimburse
-            </a>
-            <a href="#" className="block text-gray-600 hover:text-blue-600">
-              Inbox
-            </a>
-            <a href="#" className="block text-gray-600 hover:text-blue-600">
-              Calendar
-            </a>
-          </nav>
-          <hr />
-          <nav className="space-y-4">
-            <a href="#" className="block text-gray-600 hover:text-blue-600">
-              Settings
-            </a>
-            <a href="#" className="block text-gray-600 hover:text-blue-600">
-              Help & Center
-            </a>
-            <button className="block text-gray-600 hover:text-blue-600">
-              Dark Mode
-            </button>
-            <button className="block text-gray-600 hover:text-blue-600">
-              Log Out
-            </button>
-          </nav>
-        </aside>
+    <div>
+      <Head>
+        <title>Dashboard</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Lato:wght@400;500;700&display=swap" />
+      </Head>
+      <div className="bg-gray-50 min-h-screen py-10 px-4 md:px-10 font-lato">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Sidebar */}
+          <aside className="col-span-1 bg-white p-6 rounded-lg shadow space-y-6">
+            <nav className="space-y-4">
+              <a href="#" className="block text-blue-600 font-semibold font-montserrat">
+                Dashboard
+              </a>
+              <a href="#" className="block text-gray-600 hover:text-blue-600 font-montserrat">
+                Car Rent
+              </a>
+              <a href="#" className="block text-gray-600 hover:text-blue-600 font-montserrat">
+                Reimburse
+              </a>
+              <a href="#" className="block text-gray-600 hover:text-blue-600 font-montserrat">
+                Inbox
+              </a>
+              <a href="#" className="block text-gray-600 hover:text-blue-600 font-montserrat">
+                Calendar
+              </a>
+            </nav>
+            <hr />
+            <nav className="space-y-4">
+              <a href="#" className="block text-gray-600 hover:text-blue-600 font-montserrat">
+                Settings
+              </a>
+              <a href="#" className="block text-gray-600 hover:text-blue-600 font-montserrat">
+                Help & Center
+              </a>
+              <button className="block text-gray-600 hover:text-blue-600 font-montserrat">
+                Dark Mode
+              </button>
+              <button className="block text-gray-600 hover:text-blue-600 font-montserrat">
+                Log Out
+              </button>
+            </nav>
+          </aside>
 
-        {/* Main Content */}
-        <main className="col-span-3 space-y-6">
-          {/* Top Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Map and Rental Details */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-lg font-semibold mb-4">Details Rental</h2>
-              <div className="h-48 bg-gray-200 rounded-lg mb-6">
-                <Image
-                  src={"/images/Maps (1).png"}
-                  alt="map"
-                  width={486}
-                  height={272}
-                ></Image>
-              </div>
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="font-medium">Pick-Up</span>
-                  <span>Kota Semarang</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Date</span>
-                  <span>20 July 2022</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Time</span>
-                  <span>07:00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Drop-Off</span>
-                  <span>Kota Semarang</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Date</span>
-                  <span>21 July 2022</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Time</span>
-                  <span>01:00</span>
-                </div>
-              </div>
-              <hr className="my-4" />
-              <div className="flex justify-between">
-                <span className="font-semibold">Total Rental Price</span>
-                <span>$80.00</span>
-              </div>
-            </div>
-
-            {/* Top 5 Car Rental */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-lg font-semibold mb-4">Top 5 Car Rental</h2>
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-semibold">72k</span>
-                </div>
-                <ul className="space-y-2 ">
-                  {["SUV", "Coupe", "Hatchback", "MPV"].map(
-                    (category, index) => (
-                      <li key={index} className="flex justify-between">
-                        <span>{category}</span>
-                        <span>{Math.floor(Math.random() * 20000)}</span>
-                      </li>
-                    )
-                  )}
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Transactions */}
-          <section className="mt-6 bg-white rounded-lg shadow-md p-6">
-            <h2 className="font-bold text-lg">Recent Transactions</h2>
-            <ul className="mt-4 space-y-2">
-              <li className="flex justify-between">
-                <div className="flex items-center gap-3">
-                  <Image
-                    src="/images/image 8.png"
-                    alt="Nissan GT-R"
-                    width={150}
-                    height={50}
-                    className="rounded-md"
-                  />
-                  <span>Nissan GT - R</span>
-                </div>
-                <span>$80.00</span>
-              </li>
-              <li className="flex justify-between">
-                <div className="flex items-center gap-3">
-                  <Image
-                    src="/images/image 7.png"
-                    alt="Koenigsegg"
-                    width={150}
-                    height={50}
-                    className="rounded-md"
-                  />
-                  <span>Koenigsegg</span>
-                </div>
-                <span>$99.00</span>
-              </li>
-              <li className="flex justify-between">
-                <div className="flex items-center gap-3">
-                  <Image
-                    src="/images/Car (4).png"
-                    alt="Rolls-Royce"
-                    width={150}
-                    height={50}
-                    className="rounded-md"
-                  />
-                  <span>Rolls-Royce</span>
-                </div>
-                <span>$96.00</span>
-              </li>
-              <li className="flex justify-between">
-                <div className="flex items-center gap-3">
-                  <Image
-                    src="/images/Car (7).png"
-                    alt="CR-V"
-                    width={150}
-                    height={50}
-                    className="rounded-md"
-                  />
-                  <span>CR - V</span>
-                </div>
-                <span>$80.00</span>
-              </li>
-            </ul>
-          </section>
-        </main>
+          {/* Main Content */}
+          <main className="col-span-3 space-y-6">
+            {/* My Bookings Section */}
+            <section className="mt-6 bg-white rounded-lg shadow-md p-6">
+              <h2 className="font-bold text-lg font-montserrat">My Bookings</h2>
+              <ul className="mt-4 space-y-4">
+                {bookings.map((booking) => (
+                  <li key={booking._id} className="flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src={booking.car.imageUrl}
+                        alt={booking.car.name || "Car Image"}
+                        width={100}
+                        height={60}
+                        quality={100}
+                        className="rounded-md"
+                      />
+                      <span className="font-montserrat">{booking.car.name}</span>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-500 font-lato">
+                        {new Date(booking.rentalDate).toLocaleDateString()} -{" "}
+                        {new Date(booking.returnDate).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm text-gray-500 font-lato">{booking.status}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </main>
+        </div>
       </div>
     </div>
   );

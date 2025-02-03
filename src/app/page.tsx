@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 
 export interface Car {
+  capacity: string;
   _id: string;
   name: string;
   pricePerDay: string;
