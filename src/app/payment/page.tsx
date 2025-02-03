@@ -110,7 +110,7 @@ const PaymentPage = () => {
   // Close the success popup and redirect to the User Dashboard
   const closePopup = () => {
     setShowPopup(false);
-    router.push("/user-dashboard"); // Redirect to User Dashboard
+    router.push("/dashboard"); // Redirect to User Dashboard
   };
 
   return (

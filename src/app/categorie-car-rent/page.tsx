@@ -57,6 +57,18 @@ const Home: React.FC = () => {
     );
   };
 
+  const filteredCars = cars.filter(
+    (car: { type: string; capacity: string; price: number }) => {
+      const matchesType =
+        selectedTypes.length === 0 || selectedTypes.includes(car.type);
+      const matchesCapacity =
+        selectedCapacities.length === 0 ||
+        selectedCapacities.includes(car.capacity);
+      const matchesPrice = car.price <= maxPrice;
+
+      return matchesType && matchesCapacity && matchesPrice;
+    }
+  );
 
   return (
     <div>

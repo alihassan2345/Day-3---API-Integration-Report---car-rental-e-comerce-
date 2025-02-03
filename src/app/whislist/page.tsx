@@ -4,15 +4,23 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+// Define the car interface for the wishlist items
+interface WishlistItem {
+  _id: string;
+  name: string;
+  pricePerDay: string;
+  imageUrl: string;
+}
+
 export default function Wishlist() {
-  const [wishlist, setWishlist] = useState<any[]>([]);
+  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
 
   useEffect(() => {
     const storedWishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
     setWishlist(storedWishlist);
   }, []);
 
-  const handleRemoveFromWishlist = (item: any) => {
+  const handleRemoveFromWishlist = (item: WishlistItem) => {
     const updatedWishlist = wishlist.filter(
       (product) => product._id !== item._id
     );
@@ -22,7 +30,7 @@ export default function Wishlist() {
 
   return (
     <div className="container min-h-screen min-w-full bg-white">
-      <h1 className="text-3xl font-bold mb-6 text-center text-black ">
+      <h1 className="text-3xl font-bold mb-6 text-center text-black">
         My Wishlist
       </h1>
       {wishlist.length === 0 ? (
