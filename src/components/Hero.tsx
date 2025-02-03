@@ -211,7 +211,6 @@ const Home: React.FC = () => {
         {/* Popular Cars Section */}
         <h2 className="text-2xl font-poppins font-bold mb-6">Popular Cars</h2>
         <div>
-          <WishlistPage wishlist={wishlist} handleWishlistToggle={handleWishlistToggle} />
           <div className="container mx-auto px-4 py-10">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {response.map((car) => (
