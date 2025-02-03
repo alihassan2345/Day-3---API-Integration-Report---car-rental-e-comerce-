@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { client } from "@/sanity/lib/client";
 import toast from "react-hot-toast";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ interface Car {
   imageUrl: string;
 }
 
-const PaymentPage = () => {
+const PaymentPageContent = () => {
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
   const [car, setCar] = useState<Car | null>(null);
@@ -23,11 +23,11 @@ const PaymentPage = () => {
   const [city, setCity] = useState("");
   const [rentalDate, setRentalDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
-  const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
+  const [showPopup, setShowPopup] = useState(false);
 
   const searchParams = useSearchParams();
   const _id = searchParams.get("_id");
-  const router = useRouter(); // Router for navigation
+  const router = useRouter();
 
   // Handle promo code application
   const handlePromoApply = () => {
@@ -338,6 +338,14 @@ const PaymentPage = () => {
         </div>
       )}
     </div>
+  );
+};
+
+const PaymentPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentPageContent />
+    </Suspense>
   );
 };
 
