@@ -197,49 +197,7 @@ const ManageBookings = () => {
         </table>
       </div>
 
-      {/* Mobile-Friendly Layout */}
-      <div className="mt-8 md:hidden">
-        {bookings.map((booking) => (
-          <div key={booking._id} className="bg-white rounded-lg shadow-md p-4 mb-4">
-            <div className="space-y-2">
-              <p><strong>Booking ID:</strong> {booking._id}</p>
-              <p><strong>Car:</strong> {booking.car?.name || "N/A"}</p>
-              <p><strong>User:</strong> {booking.userName}</p>
-              <p>
-                <strong>Car Image:</strong>
-                <Image
-                  src={booking.car.imageUrl}
-                  alt={booking.car.name || "Car Image"}
-                  width={300}
-                  height={150}
-                  quality={100}
-                  className="rounded-md"
-                />
-              </p>
-              <p>
-                <strong>Status:</strong>
-                <select
-                  value={booking.status}
-                  onChange={(e) => handleStatusUpdate(booking._id, e.target.value)}
-                  className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="pending">Pending</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-              </p>
-              <p><strong>Rental Date:</strong> {new Date(booking.rentalDate).toLocaleDateString()}</p>
-              <p><strong>Return Date:</strong> {new Date(booking.returnDate).toLocaleDateString()}</p>
-              <button
-                onClick={() => handleDeleteBooking(booking._id)}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition w-full"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+    
     </div>
   );
 };
