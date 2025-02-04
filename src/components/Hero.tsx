@@ -16,6 +16,7 @@ interface Car {
 const Home: React.FC = () => {
   const [wishlist, setWishlist] = useState<Car[]>([]);
   const [response, setResponse] = useState<Car[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     const storedWishlist = localStorage.getItem("wishlist");
@@ -62,6 +63,11 @@ const Home: React.FC = () => {
     fetchData();
   }, []);
 
+  // Filter cars based on search query
+  const filteredCars = response.filter((car) =>
+    car.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       <Head>
@@ -71,6 +77,16 @@ const Home: React.FC = () => {
       </Head>
 
       <main className="bg-gray-50 p-6 font-roboto">
+        {/* Search Bar */}
+        <div className="mb-10 ">
+          <input
+            type="text"
+            placeholder="Search for a car..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full p-3 border rounded-lg focus:outline-none bg-blue-100 border-blue-600 focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
         {/* Hero Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
           {/* Left Hero Section */}
@@ -123,6 +139,7 @@ const Home: React.FC = () => {
             </div>
           </div>
         </div>
+
         {/* Search Section */}
         <div className="bg-white shadow p-6 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-6 items-center mb-10">
           <div>
@@ -143,12 +160,14 @@ const Home: React.FC = () => {
           </div>
         </div>
 
+        
+
         {/* Popular Cars Section */}
         <h2 className="text-2xl font-poppins font-bold mb-6">Popular Cars</h2>
         <div>
           <div className="container mx-auto px-4 py-10">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {response.map((car) => (
+              {filteredCars.map((car) => (
                 <div
                   key={car._id}
                   className="bg-white shadow-md hover:shadow-lg transition-shadow transform hover:-translate-y-1 cursor-pointer p-6 rounded-lg relative overflow-hidden"
