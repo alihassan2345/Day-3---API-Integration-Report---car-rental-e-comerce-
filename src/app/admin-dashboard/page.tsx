@@ -64,6 +64,43 @@ const ManageBookings = () => {
     }
   }, [isAuthenticated]);
 
+  // Function to handle deletion of a booking
+  const handleDeleteBooking = async (id: string) => {
+    try {
+      // Delete the booking from Sanity
+      await client.delete(id); // This deletes the document with the given _id
+
+      // Update the local state to remove the deleted booking
+      setBookings((prevBookings) => prevBookings.filter((booking) => booking._id !== id));
+
+      console.log("Booking deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+    }
+  };
+
+  // Function to handle status update
+  const handleStatusUpdate = async (id: string, newStatus: string) => {
+    try {
+      // Update the status in Sanity
+      await client
+        .patch(id) // Document ID to patch
+        .set({ status: newStatus }) // Set the new status
+        .commit(); // Commit the patch
+
+      // Update the local state to reflect the new status
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking._id === id ? { ...booking, status: newStatus } : booking
+        )
+      );
+
+      console.log("Status updated successfully!");
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
   // Show loading state if not authenticated
   if (!isAuthenticated) {
     return (
@@ -133,12 +170,25 @@ const ManageBookings = () => {
                     className="rounded-md"
                   />
                 </td>
-                <td className="p-4">{booking.status}</td>
+                <td className="p-4">
+                  <select
+                    value={booking.status}
+                    onChange={(e) => handleStatusUpdate(booking._id, e.target.value)}
+                    className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </td>
                 <td className="p-4">{new Date(booking.rentalDate).toLocaleDateString()}</td>
                 <td className="p-4">{new Date(booking.returnDate).toLocaleDateString()}</td>
-                <td className="p-4">
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-                    Update
+                <td className="p-4 flex space-x-2">
+                  <button
+                    onClick={() => handleDeleteBooking(booking._id)}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                  >
+                    Delete
                   </button>
                 </td>
               </tr>
@@ -166,11 +216,25 @@ const ManageBookings = () => {
                   className="rounded-md"
                 />
               </p>
-              <p><strong>Status:</strong> {booking.status}</p>
+              <p>
+                <strong>Status:</strong>
+                <select
+                  value={booking.status}
+                  onChange={(e) => handleStatusUpdate(booking._id, e.target.value)}
+                  className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </p>
               <p><strong>Rental Date:</strong> {new Date(booking.rentalDate).toLocaleDateString()}</p>
               <p><strong>Return Date:</strong> {new Date(booking.returnDate).toLocaleDateString()}</p>
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition w-full">
-                Update
+              <button
+                onClick={() => handleDeleteBooking(booking._id)}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition w-full"
+              >
+                Delete
               </button>
             </div>
           </div>
