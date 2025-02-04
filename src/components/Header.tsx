@@ -1,3 +1,9 @@
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
 import React from "react";
 import { CiSearch } from "react-icons/ci";
 import { VscListFilter } from "react-icons/vsc";
@@ -34,6 +40,12 @@ const Header = () => {
           </Link>
           <FaBell className="w-6 h-6 text-gray-500 hover:text-yellow-500 cursor-pointer" />
           <IoMdSettings className="w-6 h-6 text-gray-500 hover:text-black cursor-pointer" />
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
           
         </div>
       </div>
