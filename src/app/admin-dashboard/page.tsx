@@ -4,6 +4,18 @@ import { useState, useEffect } from "react";
 import { client } from "@/sanity/lib/client";
 import Image from "next/image";
 
+// Import Chart components and register necessary chart.js modules
+import { Doughnut } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  ChartOptions,
+} from "chart.js";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 interface Booking {
   _id: string;
   car: {
@@ -44,7 +56,7 @@ const ManageBookings = () => {
     if (isAuthenticated) {
       const fetchBookings = async () => {
         try {
-          const bookings = await client.fetch(`*[_type == "booking"]{
+          const bookingsData = await client.fetch(`*[_type == "booking"]{
             _id,
             car->{name, "imageUrl": image.asset->url},
             userName,
@@ -52,7 +64,7 @@ const ManageBookings = () => {
             rentalDate,
             returnDate
           }`);
-          setBookings(bookings);
+          setBookings(bookingsData);
         } catch (error) {
           console.error("Error fetching bookings:", error);
         } finally {
@@ -101,14 +113,16 @@ const ManageBookings = () => {
     }
   };
 
-  // Show loading state if not authenticated
+  // Show password popup if not authenticated
   if (!isAuthenticated) {
     return (
       <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
         {showPasswordPopup && (
           <div className="bg-white p-6 md:p-8 rounded-lg shadow-lg text-center w-full max-w-md">
             <h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
-            <p className="text-gray-700 mb-6">Please enter the password to access the dashboard.</p>
+            <p className="text-gray-700 mb-6">
+              Please enter the password to access the dashboard.
+            </p>
             <input
               type="password"
               placeholder="Enter Password"
@@ -131,23 +145,99 @@ const ManageBookings = () => {
 
   // Show loading state while fetching bookings
   if (loading) {
-    return <div className="bg-gray-100 min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="bg-gray-100 min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
-  // Render the admin dashboard if authenticated
+  // Compute counts for each status
+  const totalBookings = bookings.length;
+  const pendingCount = bookings.filter((booking) => booking.status === "pending").length;
+  const confirmedCount = bookings.filter((booking) => booking.status === "confirmed").length;
+  const cancelledCount = bookings.filter((booking) => booking.status === "cancelled").length;
+
+  // Calculate percentages (if any bookings exist)
+  const pendingPercentage =
+    totalBookings > 0 ? Math.round((pendingCount / totalBookings) * 100) : 0;
+  const confirmedPercentage =
+    totalBookings > 0 ? Math.round((confirmedCount / totalBookings) * 100) : 0;
+  const cancelledPercentage =
+    totalBookings > 0 ? Math.round((cancelledCount / totalBookings) * 100) : 0;
+
+  // Data for the Doughnut chart
+  const chartData = {
+    labels: ["Pending", "Confirmed", "Cancelled"],
+    datasets: [
+      {
+        data: [pendingCount, confirmedCount, cancelledCount],
+        backgroundColor: ["#FBBF24", "#34D399", "#F87171"],
+        hoverBackgroundColor: ["#F59E0B", "#10B981", "#EF4444"],
+      },
+    ],
+  };
+
+  // Optional: Chart options for customization
+  const chartOptions: ChartOptions<"doughnut"> = {
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          font: { size: 14 },
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const label = context.label || "";
+            const value = context.parsed || 0;
+            const percentage = totalBookings > 0 ? Math.round((value / totalBookings) * 100) : 0;
+            return `${label}: ${value} (${percentage}%)`;
+          },
+        },
+      },
+    },
+    maintainAspectRatio: false,
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen p-4 md:p-8">
       <h1 className="text-2xl font-bold mb-8">Manage Bookings</h1>
 
-      {/* Responsive Table */}
+      {/* Chart Section */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-xl font-bold mb-4">Booking Status Overview</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="w-full h-64">
+            <Doughnut data={chartData} options={chartOptions} />
+          </div>
+          <div className="flex flex-col justify-center">
+            <div className="mb-2">
+              <span className="inline-block w-4 h-4 bg-yellow-400 rounded-full mr-2"></span>
+              <strong>Pending:</strong> {pendingCount} ({pendingPercentage}%)
+            </div>
+            <div className="mb-2">
+              <span className="inline-block w-4 h-4 bg-green-400 rounded-full mr-2"></span>
+              <strong>Confirmed:</strong> {confirmedCount} ({confirmedPercentage}%)
+            </div>
+            <div className="mb-2">
+              <span className="inline-block w-4 h-4 bg-red-400 rounded-full mr-2"></span>
+              <strong>Cancelled:</strong> {cancelledCount} ({cancelledPercentage}%)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bookings Table */}
       <div className="overflow-x-auto bg-white rounded-lg shadow-md">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
               <th className="text-left p-4">Booking ID</th>
-              <th className="text-left p-4">Car names</th>
+              <th className="text-left p-4">Car Name</th>
               <th className="text-left p-4">User</th>
-              <th className="text-left p-4">Cars</th>
+              <th className="text-left p-4">Car Image</th>
               <th className="text-left p-4">Status</th>
               <th className="text-left p-4">Rental Date</th>
               <th className="text-left p-4">Return Date</th>
@@ -161,14 +251,18 @@ const ManageBookings = () => {
                 <td className="p-4">{booking.car?.name || "N/A"}</td>
                 <td className="p-4">{booking.userName}</td>
                 <td className="p-4">
-                  <Image
-                    src={booking.car.imageUrl}
-                    alt={booking.car.name || "Car Image"}
-                    width={300}
-                    height={150}
-                    quality={100}
-                    className="rounded-md"
-                  />
+                  {booking.car.imageUrl ? (
+                    <Image
+                      src={booking.car.imageUrl}
+                      alt={booking.car.name || "Car Image"}
+                      width={300}
+                      height={150}
+                      quality={100}
+                      className="rounded-md"
+                    />
+                  ) : (
+                    "No Image"
+                  )}
                 </td>
                 <td className="p-4">
                   <select
@@ -181,8 +275,12 @@ const ManageBookings = () => {
                     <option value="cancelled">Cancelled</option>
                   </select>
                 </td>
-                <td className="p-4">{new Date(booking.rentalDate).toLocaleDateString()}</td>
-                <td className="p-4">{new Date(booking.returnDate).toLocaleDateString()}</td>
+                <td className="p-4">
+                  {new Date(booking.rentalDate).toLocaleDateString()}
+                </td>
+                <td className="p-4">
+                  {new Date(booking.returnDate).toLocaleDateString()}
+                </td>
                 <td className="p-4 flex space-x-2">
                   <button
                     onClick={() => handleDeleteBooking(booking._id)}
@@ -196,8 +294,6 @@ const ManageBookings = () => {
           </tbody>
         </table>
       </div>
-
-    
     </div>
   );
 };
