@@ -191,7 +191,7 @@ const Home: React.FC = () => {
                   >
                     ♥
                   </button>
-                  <h2 className="text-lg font-poppins font-semibold mb-2 truncate">
+                 <h2  className="text-lg font-poppins font-semibold mb-2 truncate">
                     {car.name}
                   </h2>
                   <p className="text-gray-700 text-md font-medium mb-4">
